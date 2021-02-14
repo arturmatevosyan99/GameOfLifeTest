@@ -1,64 +1,61 @@
-class LivingCreature
-{
-    constructor(x,y,index){
-        this.x = x;
-        this.y = y;
-        this.index = index;
-        this.directions = [];   
-    }
 
+//! Setup function fires automatically
+function setup() {
 
-    chooseCell(character) {
-        var found = [];
-        for (var i in this.directions) {
-            var x = this.directions[i][0];
-            var y = this.directions[i][1];
-            if (x >= 0 && x < matrix[0].length && y >= 0 && y < matrix.length){
-                if (matrix[y][x] == ch) {
-                    found.push(this.directions[i]);
+    var socket = io();
+
+    var side = 30;
+
+    var matrix = [];
+
+    //! Getting DOM objects (HTML elements)
+    let grassCountElement = document.getElementById('grassCount');
+    let grassEaterCountElement = document.getElementById('grassEaterCount');
+    let predatorCountElement = document.getElementById('predatorCount');
+    let lavaCountElement = document.getElementById('lavaCount');
+    let hrshejCountElement = document.getElementById('hrshejCount');
+
+    //! adding socket listener on "data" <-- name, after that fire 'drawCreatures' function 
+
+    socket.on("data", drawCreatures);
+
+    function drawCreatures(data) {
+        //! after getting data pass it to matrix variable
+        matrix = data.matrix;
+        grassCountElement.innerText = data.grassCounter;
+        grassEaterCountElement.innerText = data.grassEaterCounter;
+        predatorCountElement.innerText = data.predatorCounter;
+        lavaCountElement.innerText = data.lavaCounter;
+        hrshejCountElement.innerText = data.hrshejCounter;
+        //! Every time it creates new Canvas woth new matrix size
+        createCanvas(matrix[0].length * side, matrix.length * side)
+        //! clearing background by setting it to new grey color
+        background('#acacac');
+        //! Draw grassCount and grassEaterCount to HTML (use DOM objects to update information, yes, and use .innerText <- function)
+
+        //! Drawing and coloring RECTs
+        for (var i = 0; i < matrix.length; i++) {
+            for (var j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == 1) {
+                    fill("green");
+                    rect(j * side, i * side, side, side);
+                } else if (matrix[i][j] == 2) {
+                    fill("yellow");
+                    rect(j * side, i * side, side, side);
+                } else if (matrix[i][j] == 0) {
+                    fill('#acacac');
+                    rect(j * side, i * side, side, side);
+                } else if (matrix[i][j] == 3) {
+                    fill('red');
+                    rect(j * side, i * side, side, side);
+                } else if (matrix[i][j] == 4) {
+                    fill('orange');
+                    rect(j * side, i * side, side, side);
+                } else if (matrix[i][j] == 5) {
+                    fill("black");
+                    rect(j * side, i * side, side, side);
                 }
-            }   
+            }
         }
-        return found;
     }
-     
-}
-
-
-class Grass extends LivingCreature
-{
-    constructor(x,y,index)
-    {
-        super(x,y,index)
-        this.multiply = 0;
-    }
-    
-    mul(){ /*...*/ }
-
-}
-
-
-class GrassEater extends LivingCreature
-{ 
-    constructor(x,y,index)
-    {
-        super(x,y,index)
-        this.energy = 8;
-    }
-
-    getNewCoordinates(){ ... }
-
-    chooseCell(character) { 
-        
-        this.getNewCoordinates();
-        return super.chooseCell(ch);
-
-    }
-
-
-    mul(){ ... }
-    move(){ ... }
-    eat(){ ... }
-    die(){ ... }
-
 }
