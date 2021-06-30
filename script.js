@@ -1,61 +1,145 @@
+function generator(matLen, gr, grEat, pr, By, ByE) {
+    let matrix = [];
+    for (let i = 0; i < matLen; i++) {
+        matrix[i] = [];
+        for (let j = 0; j < matLen; j++) {
+            matrix[i][j] = 0;
+        }
+    }
+    for (let i = 0; i < gr; i++) {
+        let x = Math.floor(Math.random() * matLen);
+        let y = Math.floor(Math.random() * matLen);
+        if (matrix[x][y] == 0) {
+            matrix[x][y] = 1;
+        }
+    }
+    for (let i = 0; i < grEat; i++) {
+        let x = Math.floor(Math.random() * matLen);
+        let y = Math.floor(Math.random() * matLen);
+        if (matrix[x][y] == 0) {
+            matrix[x][y] = 2;
+        }
+    }
+    for (let i = 0; i < pr; i++) {
+        let x = Math.floor(Math.random() * matLen);
+        let y = Math.floor(Math.random() * matLen);
+        if (matrix[x][y] == 0) {
+            matrix[x][y] = 3;
+        }
+    }
+    for (let i = 0; i < By; i++) {
+        let x = Math.floor(Math.random() * matLen);
+        let y = Math.floor(Math.random() * matLen);
+        if (matrix[x][y] == 0) {
+            matrix[x][y] = 4;
+        }
+    }
+    for (let i = 0; i < ByE; i++) {
+        let x = Math.floor(Math.random() * matLen);
+        let y = Math.floor(Math.random() * matLen);
+        if (matrix[x][y] == 0) {
+            matrix[x][y] = 5;
+        }
+    }
+    return matrix;
+}
 
-//! Setup function fires automatically
+let side = 20;
+
+let matrix = generator(15, 20, 5, 5, 5, 15);
+var grassArr = []
+var grassEaterArr = []
+var PredaterArr = []
+var BuysArr = []
+var BuysEaterArr = []
+
 function setup() {
+    frameRate(5);
+    createCanvas(matrix[0].length * side, matrix.length * side);
+    background('#acacac');
 
-    var socket = io();
+    for (var y = 0; y < matrix.length; ++y) {
+        for (var x = 0; x < matrix[y].length; ++x) {
+            if (matrix[y][x] == 1) {
+                var gr = new Grass(x, y)
+                grassArr.push(gr)
+            }
+            else if (matrix[y][x] == 2) {
+                var grE = new GrassEater(x, y)
+                grassEaterArr.push(grE)
+            }
+            else if (matrix[y][x] == 3) {
+                var pr = new Predater(x, y)
+                PredaterArr.push(pr)
+            }
+            else if (matrix[y][x] == 4) {
+                var By = new Buys(x, y)
+                BuysArr.push(By)
+            }
+            else if (matrix[y][x] == 5) {
+                var ByE = new BuysEater(x, y)
+                BuysEaterArr.push(ByE)
+            }
+            else if (matrix[y][x] == 8) {
 
-    var side = 30;
-
-    var matrix = [];
-
-    //! Getting DOM objects (HTML elements)
-    let grassCountElement = document.getElementById('grassCount');
-    let grassEaterCountElement = document.getElementById('grassEaterCount');
-    let predatorCountElement = document.getElementById('predatorCount');
-    let lavaCountElement = document.getElementById('lavaCount');
-    let hrshejCountElement = document.getElementById('hrshejCount');
-
-    //! adding socket listener on "data" <-- name, after that fire 'drawCreatures' function 
-
-    socket.on("data", drawCreatures);
-
-    function drawCreatures(data) {
-        //! after getting data pass it to matrix variable
-        matrix = data.matrix;
-        grassCountElement.innerText = data.grassCounter;
-        grassEaterCountElement.innerText = data.grassEaterCounter;
-        predatorCountElement.innerText = data.predatorCounter;
-        lavaCountElement.innerText = data.lavaCounter;
-        hrshejCountElement.innerText = data.hrshejCounter;
-        //! Every time it creates new Canvas woth new matrix size
-        createCanvas(matrix[0].length * side, matrix.length * side)
-        //! clearing background by setting it to new grey color
-        background('#acacac');
-        //! Draw grassCount and grassEaterCount to HTML (use DOM objects to update information, yes, and use .innerText <- function)
-
-        //! Drawing and coloring RECTs
-        for (var i = 0; i < matrix.length; i++) {
-            for (var j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] == 1) {
-                    fill("green");
-                    rect(j * side, i * side, side, side);
-                } else if (matrix[i][j] == 2) {
-                    fill("yellow");
-                    rect(j * side, i * side, side, side);
-                } else if (matrix[i][j] == 0) {
-                    fill('#acacac');
-                    rect(j * side, i * side, side, side);
-                } else if (matrix[i][j] == 3) {
-                    fill('red');
-                    rect(j * side, i * side, side, side);
-                } else if (matrix[i][j] == 4) {
-                    fill('orange');
-                    rect(j * side, i * side, side, side);
-                } else if (matrix[i][j] == 5) {
-                    fill("black");
-                    rect(j * side, i * side, side, side);
-                }
             }
         }
     }
 }
+
+
+function draw() {
+
+    for (var y = 0; y < matrix.length; y++) {
+        for (var x = 0; x < matrix[y].length; x++) {
+
+            if (matrix[y][x] == 1) {
+                fill("green");
+                rect(x * side, y * side, side, side);
+            }
+            else if (matrix[y][x] == 0) {
+                fill("#acacac");
+                rect(x * side, y * side, side, side);
+            }
+            else if (matrix[y][x] == 2) {
+                fill("yellow");
+                rect(x * side, y * side, side, side);
+            }
+            else if (matrix[y][x] == 3) {
+                fill("red");
+                rect(x * side, y * side, side, side);
+            }
+            else if (matrix[y][x] == 4) {
+                fill("white");
+                rect(x * side, y * side, side, side);
+            }
+            else if (matrix[y][x] == 5) {
+                fill("black");
+                rect(x * side, y * side, side, side);
+            }
+
+
+        }
+    }
+
+    for (var i in grassArr) {
+        grassArr[i].mul();
+    }
+    for (var i in grassEaterArr) {
+        grassEaterArr[i].mul();
+        grassEaterArr[i].eat()
+    }
+    for (var i in PredaterArr) {
+        PredaterArr[i].mul();
+        PredaterArr[i].eat();
+    }
+    for (var i in BuysArr) {
+        BuysArr[i].mul();
+    }
+    for (var i in BuysEaterArr) {
+        BuysEaterArr[i].mul();
+        BuysEaterArr[i].eat();
+    }
+}
+
+
